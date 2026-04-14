@@ -16,9 +16,16 @@ function App() {
     return audioContextRef.current;
   }
 
-  function NoteButton(note: Note) {
+  function NoteButton({ hertz }: Note) {
     return (
-      <button onClick={() => playNote(note.hertz)}>{note.hertz} Hz</button>
+      <>
+        <button type="button" onClick={() => playNote(hertz)}>
+          {hertz} Hz
+        </button>
+        <button type="button" onClick={() => deleteNote(hertz)}>
+          Delete {hertz}
+        </button>
+      </>
     );
   }
 
@@ -68,11 +75,15 @@ function App() {
 
     setNotes((prev) => {
       if (prev.some((note) => note.hertz === hertz)) {
-        return prev; // no change
+        return prev; // allow only unique notes
       }
 
       return [...prev, { hertz }].sort((a, b) => a.hertz - b.hertz);
     });
+  }
+
+  function deleteNote(hertzToDelete: number) {
+    setNotes((prev) => prev.filter((note) => note.hertz !== hertzToDelete));
   }
 
   return (
