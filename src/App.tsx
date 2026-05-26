@@ -1,9 +1,12 @@
 import { useState, useRef } from "react";
+// import { supabase } from "./utils/supabase";
+
 import "./App.css";
 
-type Note = {
-  hertz: number;
-};
+import type { Note } from "./types";
+import { playNote } from "./utils/audio";
+import { NoteForm } from "./components/NoteForm";
+import { NotesList } from "./components/NotesList";
 
 function App() {
   const [notes, setNotes] = useState<Note[]>([]);
@@ -16,45 +19,8 @@ function App() {
     return audioContextRef.current;
   }
 
-  function NoteButton({ hertz }: Note) {
-    return (
-      <>
-        <button type="button" onClick={() => playNote(hertz)}>
-          {hertz} Hz
-        </button>
-        <button type="button" onClick={() => deleteNote(hertz)}>
-          Delete {hertz}
-        </button>
-      </>
-    );
-  }
-
-  function playNote(hertz: number) {
-    const audioContext = getAudioContext();
-    const oscillator = audioContext.createOscillator(); // creates an OscillatorNode which represents a periodic waveform, or constant tone
-    const gainNode = audioContext.createGain(); // creates a GainNode, which controls the overall volume of the note
-
-    oscillator.type = "sine";
-    oscillator.frequency.setValueAtTime(hertz, audioContext.currentTime);
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    const now = audioContext.currentTime;
-    const duration = 1.5; // seconds
-    const volume = 0.15;
-
-    gainNode.gain.setValueAtTime(0, now);
-    gainNode.gain.linearRampToValueAtTime(volume, now + 0.01);
-    gainNode.gain.setValueAtTime(volume, now + duration - 0.05);
-    gainNode.gain.linearRampToValueAtTime(0, now + duration);
-
-    oscillator.start(now);
-    oscillator.stop(now + duration);
-
-    oscillator.onended = () => {
-      oscillator.disconnect();
-      gainNode.disconnect();
-    };
+  function handlePlayNote(hertz: number) {
+    playNote(getAudioContext(), hertz);
   }
 
   // get user input, create NoteButton component in UI
@@ -88,15 +54,8 @@ function App() {
 
   return (
     <>
-      <form action={createNote}>
-        <input name="hertz" type="number" />
-        <button type="submit">Create Note</button>
-      </form>
-      <>
-        {notes.map((note, i) => (
-          <NoteButton key={i} {...note} />
-        ))}
-      </>
+      <NoteForm onCreateNote={createNote} />
+      <NotesList notes={notes} onPlay={handlePlayNote} onDelete={deleteNote} />
     </>
   );
 }
