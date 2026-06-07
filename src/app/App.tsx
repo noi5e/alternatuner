@@ -1,4 +1,4 @@
-import { AuthGate } from "./features/auth/AuthGate";
+import { AuthGate } from "../features/auth/AuthGate";
 
 import "./App.css";
 
