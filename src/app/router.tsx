@@ -1,9 +1,15 @@
 import { createBrowserRouter } from "react-router";
 
-import App from "./App.tsx";
-import { LoginForm } from "../features/auth/LoginForm.tsx";
+import { AppLayout } from "./AppLayout.tsx";
+import { Tuner } from "../features/tuner/Tuner.tsx";
+import { AuthGate } from "../features/auth/AuthGate.tsx";
 
 export const router = createBrowserRouter([
-  { path: "/", element: <App /> },
-  { path: "/login", element: <LoginForm /> },
+  {
+    element: <AppLayout />,
+    children: [
+      { path: "/", element: <Tuner /> },
+      { path: "/login", element: <AuthGate /> },
+    ],
+  },
 ]);
