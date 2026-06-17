@@ -1,25 +1,28 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router";
 import { supabase } from "../../utils/supabase";
 import type {
   EmailOtpType,
-  // JwtPayload,
   VerifyTokenHashParams,
 } from "@supabase/supabase-js";
 
+import { useAuthClaims } from "./useAuthClaims";
+
 export function LoginForm() {
-  const [loading, setLoading] = useState(false);
+  const [sendingLink, setSendingLink] = useState(false);
   const [email, setEmail] = useState("");
-  // const [claims, setClaims] = useState<JwtPayload | null>(null);
-  const hasVerifiedRef = useRef(false);
+  const [authError, setAuthError] = useState<string | null>(null);
+
+  const { claims, loading } = useAuthClaims();
 
   // Check URL params on initial render
-  const [verifying, setVerifying] = useState(() => {
+  const [verifyingMagicLink, setVerifyingMagicLink] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     return Boolean(params.get("token_hash"));
   });
 
-  const [authError, setAuthError] = useState<string | null>(null);
-  // const [authSuccess, setAuthSuccess] = useState(false);
+  const hasVerifiedRef = useRef(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Check if we have token_hash in URL (magic link callback)
@@ -27,74 +30,61 @@ export function LoginForm() {
     const token_hash = params.get("token_hash");
     const type = params.get("type");
 
+    // hasVerified guards against double verifyOtp calls in React Strict Mode (dev only)
     if (!token_hash || hasVerifiedRef.current) {
       return;
     }
 
     hasVerifiedRef.current = true;
 
-    if (token_hash) {
-      // verify OTP token
-      supabase.auth
-        .verifyOtp({
-          token_hash,
-          type: (type || "email") as EmailOtpType,
-        } as VerifyTokenHashParams)
-        .then(({ error }) => {
-          if (error) {
-            setAuthError(error.message);
-          } else {
-            // setAuthSuccess(true);
-            // clear URL params
-            window.history.replaceState({}, document.title, "/");
-          }
-          setVerifying(false);
-        });
+    async function verifyMagicLink() {
+      const { error } = await supabase.auth.verifyOtp({
+        token_hash: token_hash,
+        type: (type || "email") as EmailOtpType,
+      } as VerifyTokenHashParams);
+
+      if (error) {
+        setAuthError(error.message);
+        setVerifyingMagicLink(false);
+        return;
+      }
+
+      navigate("/", { replace: true });
     }
 
-    // Check for existing session using getClaims
-    // supabase.auth.getClaims().then(({ data }) => {
-    //   const claims = data?.claims ?? null;
+    verifyMagicLink();
+  }, [navigate]);
 
-    //   setClaims(claims);
-    // });
+  useEffect(() => {
+    if (!loading && claims && !verifyingMagicLink) {
+      navigate("/", { replace: true });
+    }
+  }, [verifyingMagicLink, navigate, claims, loading]);
 
-    // const {
-    //   data: { subscription },
-    // } = supabase.auth.onAuthStateChange(() => {
-    //   supabase.auth.getClaims().then(({ data }) => {
-    //     const claims = data?.claims ?? null;
-
-    //     setClaims(claims);
-    //   });
-    // });
-
-    // return () => subscription.unsubscribe();
-  }, []);
-
-  const handleLogin = async (event: React.SubmitEvent<HTMLFormElement>) => {
+  async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setLoading(true);
+
+    if (sendingLink) return;
+
+    setSendingLink(true);
+    setAuthError(null);
+
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: window.location.origin },
+      options: {
+        emailRedirectTo: window.location.origin + "/login",
+      },
     });
+
     if (error) {
-      alert(error.message);
-    } else {
-      alert("Check your email for the login link!");
+      setAuthError(error.message);
     }
 
-    setLoading(false);
-  };
-
-  // const handleLogout = async () => {
-  //   await supabase.auth.signOut();
-  //   setClaims(null);
-  // };
+    setSendingLink(false);
+  }
 
   // Show verification state
-  if (verifying) {
+  if (verifyingMagicLink) {
     return (
       <div>
         <h1>Authentication</h1>
@@ -104,61 +94,25 @@ export function LoginForm() {
     );
   }
 
-  // Show auth error
-  if (authError) {
-    return (
-      <div>
-        <h1>Authentication</h1>
-        <p>✗ Authentication failed</p>
-        <p>{authError}</p>
-        <button
-          onClick={() => {
-            setAuthError(null);
-            window.history.replaceState({}, document.title, "/");
-          }}
-        >
-          Return to login
-        </button>
-      </div>
-    );
-  }
-
-  // Show auth success (briefly before claims load)
-  // if (authSuccess && !claims) {
-  //   return (
-  //     <div>
-  //       <h1>Authentication</h1>
-  //       <p>✓ Authentication successful!</p>
-  //       <p>Loading your account...</p>
-  //     </div>
-  //   );
-  // }
-
-  // If user is logged in, show welcome screen
-  // if (claims) {
-  //   return (
-  //     <div>
-  //       <h1>Welcome!</h1>
-  //       <p>You are logged in as: {claims.email}</p>
-  //       <button onClick={handleLogout}>Sign Out</button>
-  //     </div>
-  //   );
-  // }
-
   return (
     <>
       <h1>Login</h1>
       <p>Enter your email address to sign in:</p>
+
+      {authError && <p>✗ {authError}</p>}
+
       <form onSubmit={handleLogin}>
         <input
           type="email"
           placeholder="Your email"
           value={email}
-          required={true}
-          onChange={(e) => setEmail(e.target.value)}
+          required
+          onChange={(event) => setEmail(event.target.value)}
         />
-        <button disabled={loading}>
-          {loading ? <span>Loading</span> : <span>Send magic link</span>}
+
+        <button type="submit" disabled={sendingLink || !email}>
+          {sendingLink ? "Sending..." : "Send magic link"}{" "}
+          {/* TO DO: add linkSent state to keep button disabled while waiting for user to confirm magic link, otherwise button reenables itself after Supabase Auth sends email, and user can spam the button*/}
         </button>
       </form>
     </>
