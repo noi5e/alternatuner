@@ -14,6 +14,7 @@ export function NotesList({ notes, onPlay, onDelete }: NotesListProps) {
         <NoteButton
           key={note.hertz}
           hertz={note.hertz}
+          label={note.label}
           onPlay={onPlay}
           onDelete={onDelete}
         />
