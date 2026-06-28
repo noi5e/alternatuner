@@ -4,7 +4,7 @@ type NoteFormProps = {
 
 export function NoteForm({ onCreateNote }: NoteFormProps) {
   return (
-    <form action={onCreateNote}>
+    <form className="m-4" action={onCreateNote}>
       <input name="hertz" type="number" />
       <button type="submit">Create Note</button>
     </form>

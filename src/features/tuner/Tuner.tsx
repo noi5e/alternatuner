@@ -95,9 +95,9 @@ export function Tuner() {
   }
 
   return (
-    <>
+    <div className="m-8">
       <NoteForm onCreateNote={createNote} />
       <NotesList notes={notes} onPlay={handlePlayNote} onDelete={deleteNote} />
-    </>
+    </div>
   );
 }

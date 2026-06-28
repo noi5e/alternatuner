@@ -9,7 +9,7 @@ type NotesListProps = {
 
 export function NotesList({ notes, onPlay, onDelete }: NotesListProps) {
   return (
-    <>
+    <div className="flex flex-wrap gap-2">
       {notes.map((note) => (
         <NoteButton
           key={note.hertz}
@@ -19,6 +19,6 @@ export function NotesList({ notes, onPlay, onDelete }: NotesListProps) {
           onDelete={onDelete}
         />
       ))}
-    </>
+    </div>
   );
 }
