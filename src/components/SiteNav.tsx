@@ -18,31 +18,35 @@ export function SiteNav() {
   }
 
   return (
-    <NavigationMenu>
-      <NavigationMenuList>
+    <NavigationMenu className="bg-gray-400 text-white p-4 w-full [&>div]:w-full">
+      {/* Shadcn inserts a div wrapper for NavigationMenuList, so target the div wrapper with [&>div]:w-full */}
+      <NavigationMenuList className="w-full">
         <NavigationMenuItem>
           <NavigationMenuLink asChild>
-            <Link to="/">alternaTuner</Link>
+            <Link
+              className="text-shadow-lg text-3xl italic font-bold tracking-wide"
+              to="/"
+            >
+              alternaTuner
+            </Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
 
-        {!loading && !claims && (
-          <NavigationMenuItem>
+        <NavigationMenuItem className="ml-auto">
+          {!loading && !claims && (
             <NavigationMenuLink asChild>
               <Link to="/login">Login</Link>
             </NavigationMenuLink>
-          </NavigationMenuItem>
-        )}
+          )}
 
-        {!loading && claims && (
-          <NavigationMenuItem>
+          {!loading && claims && (
             <NavigationMenuLink asChild>
               <button type="button" onClick={handleLogout}>
                 Logout
               </button>
             </NavigationMenuLink>
-          </NavigationMenuItem>
-        )}
+          )}
+        </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
   );
