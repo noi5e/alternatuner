@@ -13,6 +13,10 @@ export type NoteButtonProps = {
   onDelete: (hertz: number) => void;
 };
 
+export type NoteFormProps = {
+  onCreateNote: (formData: FormData) => void;
+};
+
 export type Key = {
   code: string; // for keyPress events, eg. KeyboardEvent.code
   label: string; // for UX display, eg. "a", "b", "c"
