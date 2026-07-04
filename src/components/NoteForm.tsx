@@ -13,19 +13,19 @@ export function NoteForm({ onCreateNote }: NoteFormProps) {
       <FieldGroup>
         <Field>
           <FieldLabel className="italic" htmlFor="hertz">
-            Create a Musical Note:
+            Add a Note:
           </FieldLabel>
           <Input
             id="hertz"
             className="w-1/2"
             name="hertz"
             type="number"
-            placeholder="Enter a Hertz value."
+            placeholder="Enter frequency in Hz..."
             required
           />
         </Field>
         <Button className="w-1/2 cursor-pointer" type="submit">
-          Submit
+          Add
         </Button>
       </FieldGroup>
     </form>

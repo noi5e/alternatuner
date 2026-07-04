@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 
 import type { Note } from "../../types";
+
+import { ScaleHeader } from "./ScaleHeader";
 import { NoteForm } from "../../components/NoteForm";
 import { NotesList } from "../../components/NotesList";
 
@@ -95,7 +97,8 @@ export function Tuner() {
   }
 
   return (
-    <div className="m-8">
+    <div>
+      <ScaleHeader />
       <NoteForm onCreateNote={createNote} />
       <NotesList notes={notes} onPlay={handlePlayNote} onDelete={deleteNote} />
     </div>
