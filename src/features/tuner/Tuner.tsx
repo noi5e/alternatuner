@@ -8,6 +8,7 @@ import { NotesList } from "../../components/NotesList";
 
 import { playNote } from "../../utils/audio";
 import { getKeyboardRange } from "../../utils/keyBindings";
+import { SideBar } from "#components/SideBar";
 
 // sort keys by hertz, assign keyDown codes so they're playable via keyboard
 function getPlayableNotes(notes: Note[]) {
@@ -97,10 +98,17 @@ export function Tuner() {
   }
 
   return (
-    <div>
-      <ScaleHeader />
-      <NoteForm onCreateNote={createNote} />
-      <NotesList notes={notes} onPlay={handlePlayNote} onDelete={deleteNote} />
+    <div className="grid min-h-[calc(100vh-var(--nav-height))] grid-cols-1 lg:grid-cols-[16rem_minmax(0,1fr)]">
+      <SideBar />
+      <main className="min-w-0 p-4 sm:p-6 lg:p-8">
+        <ScaleHeader />
+        <NoteForm onCreateNote={createNote} />
+        <NotesList
+          notes={notes}
+          onPlay={handlePlayNote}
+          onDelete={deleteNote}
+        />
+      </main>
     </div>
   );
 }

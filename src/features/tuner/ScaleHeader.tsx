@@ -17,7 +17,7 @@ export function ScaleHeader() {
       <div className="flex basis-1/2 m-auto sm:justify-end">
         <Button className="max-w-fit mr-2 cursor-pointer">
           <HeartIcon />
-          Add to Favorites
+          Favorite
         </Button>
         <Button className="max-w-fit cursor-pointer">
           <FileIcon />
