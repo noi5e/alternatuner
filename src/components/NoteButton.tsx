@@ -12,25 +12,32 @@ export function NoteButton({
   onDelete,
 }: NoteButtonProps) {
   return (
-    <Card className="w-fit rounded-sm" onClick={() => onPlay(hertz)}>
-      <CardHeader>
-        <div className="flex justify-between items-center">
+    <Card
+      className="relative h-32 w-28 cursor-pointer rounded-none"
+      onClick={() => onPlay(hertz)}
+    >
+      <CardHeader className="absolute inset-0 p-2 z-10 rounded-none">
+        <div className="flex justify-around items-center">
           {label && (
-            <Badge className="text-gray-400" variant="ghost">
+            <Badge className="text-gray-400 cursor-default bg-transparent">
               {label}
             </Badge>
           )}
           <Button
-            className="text-gray-400"
+            className="opacity-0 transition-opacity group-hover/card:opacity-100 focus-visible:opacity-100 text-gray-400 cursor-pointer"
+            aria-label={`Delete ${hertz} Hz note`}
             variant="ghost"
             size="icon"
-            onClick={() => onDelete(hertz)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(hertz);
+            }}
           >
             <TrashIcon />
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="flex items-center gap-1">
+      <CardContent className="absolute inset-0 flex items-center justify-center gap-1 p-0">
         <span className="font-extrabold text-2xl">{hertz}</span>
         <span className="text-xs text-gray-400">Hz</span>
       </CardContent>
