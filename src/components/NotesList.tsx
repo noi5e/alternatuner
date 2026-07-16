@@ -1,13 +1,12 @@
-import type { Note } from "../types";
+import type { NotesListProps } from "../types";
 import { NoteButton } from "./NoteButton";
 
-type NotesListProps = {
-  notes: Note[];
-  onPlay: (hertz: number) => void;
-  onDelete: (hertz: number) => void;
-};
-
-export function NotesList({ notes, onPlay, onDelete }: NotesListProps) {
+export function NotesList({
+  notes,
+  onDelete,
+  startNote,
+  stopNote,
+}: NotesListProps) {
   return (
     <div className="flex flex-wrap gap-2 my-8">
       {notes.map((note) => (
@@ -15,8 +14,9 @@ export function NotesList({ notes, onPlay, onDelete }: NotesListProps) {
           key={note.hertz}
           hertz={note.hertz}
           label={note.label}
-          onPlay={onPlay}
           onDelete={onDelete}
+          startNote={startNote}
+          stopNote={stopNote}
         />
       ))}
     </div>

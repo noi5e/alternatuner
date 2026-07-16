@@ -6,15 +6,30 @@ export type Note = {
   label?: string;
 };
 
+export type PlayingNote = {
+  stop: () => void;
+};
+
+type startNoteFunction = (id: string, hertz: number) => void;
+type stopNoteFunction = (id: string) => void;
+
 export type NoteButtonProps = {
   hertz: number;
   label?: string;
-  onPlay: (hertz: number) => void;
   onDelete: (hertz: number) => void;
+  startNote: startNoteFunction;
+  stopNote: stopNoteFunction;
 };
 
 export type NoteFormProps = {
   onCreateNote: (formData: FormData) => void;
+};
+
+export type NotesListProps = {
+  notes: Note[];
+  onDelete: (hertz: number) => void;
+  startNote: startNoteFunction;
+  stopNote: stopNoteFunction;
 };
 
 export type Key = {

@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 
-import type { Note } from "../../types";
+import type { Note, PlayingNote } from "../../types";
 
 import { ScaleHeader } from "./ScaleHeader";
 import { NoteForm } from "../../components/NoteForm";
 import { NotesList } from "../../components/NotesList";
 
-import { playNote } from "../../utils/audio";
+import { getPlayingNote } from "../../utils/audio";
 import { getKeyboardRange } from "../../utils/keyBindings";
 import { SideBar } from "#components/SideBar";
 
@@ -23,24 +23,30 @@ function getPlayableNotes(notes: Note[]) {
 
 export function Tuner() {
   const [notes, setNotes] = useState<Note[]>([]);
+  const playingNotes = useRef<Map<string, PlayingNote>>(new Map()); // notes that user is currently playing via keyboard, or pointer (mouse or touch). key is either "keyboard:${event.code}" or "pointer:${pointerId}"
   const audioContextRef = useRef<AudioContext | null>(null); // reuse audio context; avoid creating new audioCtx for each note, and allow sustained, overlapping notes
 
   const getAudioContext = useCallback(() => {
+    // reuse audioContext if one currently exists, otherwise create a new one.
     if (!audioContextRef.current) {
       audioContextRef.current = new AudioContext();
     }
     return audioContextRef.current;
   }, []);
 
-  const handlePlayNote = useCallback(
-    (hertz: number) => {
-      playNote(getAudioContext(), hertz);
+  const startNote = useCallback(
+    (id: string, hertz: number) => {
+      playingNotes.current.get(id)?.stop(); // stop any existing note keyed to id before starting new one
+      const playingNote = getPlayingNote(getAudioContext(), hertz);
+      playingNotes.current.set(id, playingNote);
     },
     [getAudioContext],
   );
 
-  useEffect(() => {
-    function handleKeyDown(event: KeyboardEvent) {
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.repeat) return; // ignore repeated keydown events if user holds down key
+
       const target = event.target as HTMLElement | null;
 
       if (
@@ -52,19 +58,59 @@ export function Tuner() {
         return;
       }
 
-      const note = notes.find((note) => note.code === event.code);
+      const note = notes.find((note) => note.code === event.code); // check to see if key that's pressed corresponds to a note in set
 
       if (!note) return;
 
       event.preventDefault(); // prevent default browser behavior for keydown events that correspond to notes
-      handlePlayNote(note.hertz);
-    }
+      startNote(`keyboard:${event.code}`, note.hertz);
+    },
+    [notes, startNote],
+  );
 
+  useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [notes, handlePlayNote]);
+  }, [handleKeyDown]);
+
+  const stopNote = useCallback((id: string) => {
+    const playingNote = playingNotes.current.get(id);
+
+    if (!playingNote) return;
+
+    playingNote.stop();
+    playingNotes.current.delete(id);
+  }, []);
+
+  const stopAllNotes = useCallback(() => {
+    playingNotes.current.forEach((playingNote) => playingNote.stop());
+    playingNotes.current.clear();
+  }, []);
+
+  const handleKeyUp = useCallback(
+    (event: KeyboardEvent) => {
+      if (playingNotes.current.has(`keyboard:${event.code}`)) {
+        event.preventDefault();
+        stopNote(`keyboard:${event.code}`);
+      }
+    },
+    [stopNote],
+  );
+
+  useEffect(() => {
+    window.addEventListener("keyup", handleKeyUp);
+    return () => {
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, [handleKeyUp]);
+
+  useEffect(() => {
+    return () => {
+      stopAllNotes();
+    };
+  }, [stopAllNotes]);
 
   // get user input, create NoteButton component in UI
   function createNote(formData: FormData) {
@@ -82,16 +128,20 @@ export function Tuner() {
       return;
     }
 
-    setNotes((prev) => {
-      if (prev.some((note) => note.hertz === hertz)) {
-        return prev; // allow only unique notes
-      }
+    if (notes.some((note) => note.hertz === hertz)) {
+      return; // allow only unique notes
+    }
 
+    stopAllNotes();
+
+    setNotes((prev) => {
       return getPlayableNotes([...prev, { hertz }]);
     });
   }
 
   function deleteNote(hertzToDelete: number) {
+    stopAllNotes(); // prevents stuck playingNotes if user simultaneously holds a note, and deletes it or another note.
+
     setNotes((prev) =>
       getPlayableNotes(prev.filter((note) => note.hertz !== hertzToDelete)),
     );
@@ -105,8 +155,9 @@ export function Tuner() {
         <NoteForm onCreateNote={createNote} />
         <NotesList
           notes={notes}
-          onPlay={handlePlayNote}
           onDelete={deleteNote}
+          startNote={startNote}
+          stopNote={stopNote}
         />
       </main>
     </div>
