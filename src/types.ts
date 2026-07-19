@@ -35,6 +35,10 @@ export type NotesListProps = {
   stopNote: stopNoteFunction;
 };
 
+export type ScaleHeaderProps = {
+  notesCount: number;
+};
+
 export type Key = {
   code: string; // for keyPress events, eg. KeyboardEvent.code
   label: string; // for UX display, eg. "a", "b", "c"

@@ -182,7 +182,7 @@ export function Tuner() {
     <div className="grid min-h-[calc(100vh-var(--nav-height))] grid-cols-1 lg:grid-cols-[16rem_minmax(0,1fr)]">
       <SideBar />
       <main className="min-w-0 p-4 sm:p-6 lg:p-8">
-        <ScaleHeader />
+        <ScaleHeader notesCount={notes.length} />
         <NoteForm onCreateNote={createNote} />
         <NotesList
           notes={notes}

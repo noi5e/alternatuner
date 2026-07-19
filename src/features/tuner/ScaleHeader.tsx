@@ -3,7 +3,9 @@ import { HeartIcon } from "@phosphor-icons/react";
 
 import { Button } from "@/components/ui/button";
 
-export function ScaleHeader() {
+import type { ScaleHeaderProps } from "../../types";
+
+export function ScaleHeader({ notesCount }: ScaleHeaderProps) {
   return (
     <div className="w-full flex flex-col items-end sm:flex-row sm:items-center p-4 gap-4">
       <div className="flex justify-center sm:justify-start sm:basis-1/2 w-full items-baseline gap-4">
@@ -11,7 +13,8 @@ export function ScaleHeader() {
           "Untitled Scale"
         </div>
         <div className=" text-gray-400 whitespace-nowrap italic items-end sm:items-center font-thin text-xl cursor-default">
-          ( 7 Notes )
+          ( {notesCount > 0 ? notesCount : 0}{" "}
+          {notesCount === 1 ? "Note" : "Notes"} )
         </div>
       </div>
       <div className="flex basis-1/2 m-auto sm:justify-end">
