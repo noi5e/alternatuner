@@ -7,6 +7,7 @@ export type Note = {
 };
 
 export type PlayingNote = {
+  hertz: number;
   stop: () => void;
 };
 
@@ -16,6 +17,7 @@ type stopNoteFunction = (id: string) => void;
 export type NoteButtonProps = {
   hertz: number;
   label?: string;
+  isPlaying: boolean;
   onDelete: (hertz: number) => void;
   startNote: startNoteFunction;
   stopNote: stopNoteFunction;
@@ -28,6 +30,7 @@ export type NoteFormProps = {
 export type NotesListProps = {
   notes: Note[];
   onDelete: (hertz: number) => void;
+  playingHertz: Set<number>;
   startNote: startNoteFunction;
   stopNote: stopNoteFunction;
 };

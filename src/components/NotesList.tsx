@@ -4,6 +4,7 @@ import { NoteButton } from "./NoteButton";
 export function NotesList({
   notes,
   onDelete,
+  playingHertz,
   startNote,
   stopNote,
 }: NotesListProps) {
@@ -17,6 +18,7 @@ export function NotesList({
           onDelete={onDelete}
           startNote={startNote}
           stopNote={stopNote}
+          isPlaying={playingHertz.has(note.hertz)}
         />
       ))}
     </div>

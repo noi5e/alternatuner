@@ -14,13 +14,17 @@ function releasePointerCapture(event: React.PointerEvent<HTMLElement>) {
 export function NoteButton({
   hertz,
   label,
+  isPlaying,
   onDelete,
   startNote,
   stopNote,
 }: NoteButtonProps) {
   return (
     <Card
-      className="relative h-32 w-28 cursor-pointer rounded-none"
+      data-playing={isPlaying}
+      className="relative h-32 w-28 cursor-pointer rounded-none transition-colors duration-100
+    data-[playing=true]:bg-primary
+    data-[playing=true]:text-primary-foreground"
       onPointerDown={(event) => {
         if (event.button !== 0) return; // only respond to left mouse button or primary touch
         event.currentTarget.setPointerCapture(event.pointerId); // ensures that the pointerup event is fired even if the user moves their pointer outside of the button, while holding down

@@ -71,7 +71,7 @@ export function getPlayingNote(
     let releaseAt = now;
 
     if (now < attackEndTime) {
-      // Preserve the remainder of the attack for extremely light taps.
+      // preserve the remainder of the attack for extremely light taps.
       gainNode.gain.linearRampToValueAtTime(PEAK, attackEndTime);
       releaseAt = attackEndTime;
     }
@@ -86,5 +86,5 @@ export function getPlayingNote(
     gainNode.disconnect();
   };
 
-  return { stop };
+  return { hertz, stop };
 }
