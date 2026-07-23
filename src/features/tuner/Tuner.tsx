@@ -25,6 +25,7 @@ function getPlayableNotes(notes: Note[]) {
 
 export function Tuner() {
   const [notes, setNotes] = useState<Note[]>([]); // notes that user enters/deletes, visible in UI
+  const [scaleTitle, setScaleTitle] = useState<string>("Untitled Scale"); // title of scale, editable by user
   const [playingHertz, setPlayingHertz] = useState<Set<number>>(new Set()); // set of hertz values, sync'ed with  playingNotes, used to highlight actively playing notes in UI.
 
   const playingNotes = useRef<Map<string, PlayingNote>>(new Map()); // live PlayingNote objects, with built-in stop functions, that user is currently playing via keyboard, or pointer (mouse or touch). key is either "keyboard:${event.code}" or "pointer:${pointerId}"
@@ -182,7 +183,11 @@ export function Tuner() {
     <div className="grid min-h-[calc(100vh-var(--nav-height))] grid-cols-1 lg:grid-cols-[16rem_minmax(0,1fr)]">
       <SideBar />
       <main className="min-w-0 p-4 sm:p-6 lg:p-8">
-        <ScaleHeader notesCount={notes.length} />
+        <ScaleHeader
+          scaleTitle={scaleTitle}
+          notesCount={notes.length}
+          setScaleTitle={setScaleTitle}
+        />
         <NoteForm onCreateNote={createNote} />
         <NotesList
           notes={notes}

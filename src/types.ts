@@ -37,6 +37,8 @@ export type NotesListProps = {
 
 export type ScaleHeaderProps = {
   notesCount: number;
+  setScaleTitle: (newTitle: string) => void;
+  scaleTitle: string;
 };
 
 export type Key = {
