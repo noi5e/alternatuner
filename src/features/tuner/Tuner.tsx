@@ -1,14 +1,14 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 
-import type { Note, PlayingNote } from "../../types";
+import type { Note, PlayingNote } from "./tuner.types";
 
-import { ScaleHeader } from "./ScaleHeader";
-import { NoteForm } from "../../components/NoteForm";
-import { NotesList } from "../../components/NotesList";
+import { ScaleHeader } from "../scales/ScaleHeader";
+import { NoteForm } from "./NoteForm";
+import { NotesList } from "./NotesList";
 
-import { getPlayingNote } from "../../utils/audio";
-import { getKeyboardRange } from "../../utils/keyBindings";
-import { SideBar } from "#components/SideBar";
+import { getPlayingNote } from "./audio";
+import { getKeyboardRange } from "./keyBindings";
+import { ScaleSideBar } from "@/features/scales/ScaleSideBar";
 
 const MIN_HIGHLIGHT_MS = 100; // minimum time to highlight a NoteButton after stopNote() is called, to ensure that short pointer taps are visually registered in the UI.
 
@@ -181,7 +181,7 @@ export function Tuner() {
 
   return (
     <div className="grid min-h-[calc(100vh-var(--nav-height))] grid-cols-1 lg:grid-cols-[16rem_minmax(0,1fr)]">
-      <SideBar />
+      <ScaleSideBar />
       <main className="min-w-0 p-4 sm:p-6 lg:p-8">
         <ScaleHeader
           scaleTitle={scaleTitle}

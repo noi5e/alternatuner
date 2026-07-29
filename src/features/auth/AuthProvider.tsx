@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { supabase } from "@/utils/supabase";
+import { supabase } from "#lib/supabase";
 import { useAuthClaims } from "./useAuthClaims";
 import { AuthContext } from "./AuthContext";
 

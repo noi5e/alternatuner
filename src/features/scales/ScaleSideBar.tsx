@@ -1,5 +1,5 @@
 import { PlusIcon } from "@phosphor-icons/react";
-import { Button } from "./ui/button";
+import { Button } from "../../components/ui/button";
 
 const scales = [
   { id: "harmonic", name: "Harmonic" },
@@ -7,7 +7,7 @@ const scales = [
   { id: "just-scale", name: "Just Scale" },
 ];
 
-export function SideBar() {
+export function ScaleSideBar() {
   return (
     <aside className="hidden border-r bg-muted/30 lg:flex h-[calc(100vh-var(--nav-height))] flex-col p-4 sticky top-(--nav-height) ">
       <div className="mb-4">

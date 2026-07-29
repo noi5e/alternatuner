@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 
-import { supabase } from "../../utils/supabase";
+import { supabase } from "../../lib/supabase";
 import type {
   EmailOtpType,
   VerifyTokenHashParams,

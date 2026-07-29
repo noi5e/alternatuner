@@ -1,4 +1,4 @@
-import type { NotesListProps } from "../types";
+import type { NotesListProps } from "./tuner.types";
 import { NoteButton } from "./NoteButton";
 
 export function NotesList({
