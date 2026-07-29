@@ -1,4 +1,4 @@
-import type { NoteFormProps } from "../types";
+import type { NoteFormProps } from "@/features/tuner/tuner.types";
 
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";

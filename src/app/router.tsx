@@ -1,8 +1,8 @@
 import { createBrowserRouter } from "react-router";
 
-import { AppLayout } from "./AppLayout.tsx";
-import { Tuner } from "../features/tuner/Tuner.tsx";
-import { LoginForm } from "../features/auth/LoginForm.tsx";
+import { AppLayout } from "@/app/AppLayout.tsx";
+import { Tuner } from "@/features/tuner/Tuner.tsx";
+import { LoginForm } from "@/features/auth/LoginForm.tsx";
 
 export const router = createBrowserRouter([
   {

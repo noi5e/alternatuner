@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { JwtPayload } from "@supabase/supabase-js";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "@/lib/supabase";
 
 export function useAuthClaims() {
   const [claims, setClaims] = useState<JwtPayload | null>(null);

@@ -1,5 +1,5 @@
-import type { NotesListProps } from "./tuner.types";
-import { NoteButton } from "./NoteButton";
+import type { NotesListProps } from "@/features/tuner/tuner.types";
+import { NoteButton } from "@/features/tuner/NoteButton";
 
 export function NotesList({
   notes,

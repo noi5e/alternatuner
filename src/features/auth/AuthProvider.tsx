@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
-import { supabase } from "#lib/supabase";
-import { useAuthClaims } from "./useAuthClaims";
-import { AuthContext } from "./AuthContext";
+import { supabase } from "@/lib/supabase";
+import { useAuthClaims } from "@/features/auth/useAuthClaims";
+import { AuthContext } from "@/features/auth/AuthContext";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { claims, loading } = useAuthClaims();

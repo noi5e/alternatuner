@@ -1,4 +1,4 @@
-import type { Key } from "../types";
+import type { Key } from "@/features/tuner/tuner.types";
 
 function getAlphaNumericKey(char: string) {
   if (/^\d$/.test(char)) {

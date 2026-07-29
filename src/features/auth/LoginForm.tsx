@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 
-import { supabase } from "../../lib/supabase";
+import { supabase } from "@/lib/supabase";
 import type {
   EmailOtpType,
   VerifyTokenHashParams,
@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
-import { useAuthClaims } from "./useAuthClaims";
+import { useAuthClaims } from "@/features/auth/useAuthClaims";
 
 function getAuthErrorMessage(error: unknown) {
   if (error && typeof error === "object" && "code" in error) {

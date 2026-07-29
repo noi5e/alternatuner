@@ -1,5 +1,5 @@
 import { PlusIcon } from "@phosphor-icons/react";
-import { Button } from "../../components/ui/button";
+import { Button } from "@/components/ui/button";
 
 const scales = [
   { id: "harmonic", name: "Harmonic" },

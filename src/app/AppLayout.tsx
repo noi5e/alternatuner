@@ -1,5 +1,5 @@
 import { Outlet } from "react-router";
-import { SiteNav } from "./SiteNav";
+import { SiteNav } from "@/app/SiteNav";
 
 export function AppLayout() {
   return (

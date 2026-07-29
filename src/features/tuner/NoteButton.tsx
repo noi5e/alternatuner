@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TrashIcon } from "@phosphor-icons/react";
 
-import type { NoteButtonProps } from "../types";
+import type { NoteButtonProps } from "@/features/tuner/tuner.types";
 
 function releasePointerCapture(event: React.PointerEvent<HTMLElement>) {
   if (event.currentTarget.hasPointerCapture(event.pointerId)) {

@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Link, useNavigate } from "react-router";
 
-import { useAuthClaims, signOut } from "../features/auth/useAuthClaims";
+import { useAuthClaims, signOut } from "@/features/auth/useAuthClaims";
 
 export function SiteNav() {
   const { claims, loading } = useAuthClaims();

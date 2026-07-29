@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 
-import type { Note, PlayingNote } from "./tuner.types";
+import type { Note, PlayingNote } from "@/features/tuner/tuner.types";
 
-import { ScaleHeader } from "../scales/ScaleHeader";
-import { NoteForm } from "./NoteForm";
-import { NotesList } from "./NotesList";
+import { ScaleHeader } from "@/features/scales/ScaleHeader";
+import { NoteForm } from "@/features/tuner/NoteForm";
+import { NotesList } from "@/features/tuner/NotesList";
 
-import { getPlayingNote } from "./audio";
-import { getKeyboardRange } from "./keyBindings";
+import { getPlayingNote } from "@/features/tuner/audio";
+import { getKeyboardRange } from "@/features/tuner/keyBindings";
 import { ScaleSideBar } from "@/features/scales/ScaleSideBar";
 
 const MIN_HIGHLIGHT_MS = 100; // minimum time to highlight a NoteButton after stopNote() is called, to ensure that short pointer taps are visually registered in the UI.
