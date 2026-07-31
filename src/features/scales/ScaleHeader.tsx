@@ -10,6 +10,8 @@ import type { ScaleHeaderProps } from "@/features/scales/scale.types";
 export function ScaleHeader({
   scaleTitle,
   notesCount,
+  onSave,
+  isSaving,
   setScaleTitle,
 }: ScaleHeaderProps) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -107,9 +109,13 @@ export function ScaleHeader({
           <HeartIcon />
           Favorite
         </Button>
-        <Button className="max-w-fit cursor-pointer">
+        <Button
+          className="max-w-fit cursor-pointer"
+          disabled={isSaving}
+          onClick={onSave}
+        >
           <FileIcon />
-          Save
+          {isSaving ? "Saving..." : "Save"}
         </Button>
       </div>
     </div>

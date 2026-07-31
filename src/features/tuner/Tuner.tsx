@@ -10,6 +10,8 @@ import { getPlayingNote } from "@/features/tuner/audio";
 import { getKeyboardRange } from "@/features/tuner/keyBindings";
 import { ScaleSideBar } from "@/features/scales/ScaleSideBar";
 
+import { createScale } from "@/features/scales/api";
+
 const MIN_HIGHLIGHT_MS = 100; // minimum time to highlight a NoteButton after stopNote() is called, to ensure that short pointer taps are visually registered in the UI.
 
 // sort keys by hertz, assign keyDown codes so they're playable via keyboard
@@ -30,6 +32,9 @@ export function Tuner() {
 
   const playingNotes = useRef<Map<string, PlayingNote>>(new Map()); // live PlayingNote objects, with built-in stop functions, that user is currently playing via keyboard, or pointer (mouse or touch). key is either "keyboard:${event.code}" or "pointer:${pointerId}"
   const audioContextRef = useRef<AudioContext | null>(null); // reuse audio context; avoid creating new audioCtx for each note, and allow sustained, overlapping notes
+
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const getAudioContext = useCallback(() => {
     // reuse audioContext if one currently exists, otherwise create a new one.
@@ -179,6 +184,29 @@ export function Tuner() {
     );
   }
 
+  async function saveScale() {
+    if (isSaving) return;
+
+    setIsSaving(true);
+    setSaveError(null);
+
+    try {
+      const savedScale = await createScale({
+        title: scaleTitle,
+        notes: notes.map(({ hertz }) => ({ hertz })),
+      });
+
+      console.log("Saved scale:", savedScale);
+    } catch (error) {
+      console.error("Error saving scale:", error);
+      setSaveError(
+        error instanceof Error ? error.message : "Could not save the scale.",
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
   return (
     <div className="grid min-h-[calc(100vh-var(--nav-height))] grid-cols-1 lg:grid-cols-[16rem_minmax(0,1fr)]">
       <ScaleSideBar />
@@ -186,8 +214,15 @@ export function Tuner() {
         <ScaleHeader
           scaleTitle={scaleTitle}
           notesCount={notes.length}
+          onSave={saveScale}
           setScaleTitle={setScaleTitle}
+          isSaving={isSaving}
         />
+        {saveError && (
+          <p role="alert" className="px-4 text-sm text-red-600">
+            {saveError}
+          </p>
+        )}
         <NoteForm onCreateNote={createNote} />
         <NotesList
           notes={notes}
