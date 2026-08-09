@@ -14,6 +14,17 @@ export async function listScales() {
   return data;
 }
 
+export async function getScaleById(scaleId: string) {
+  const { data, error } = await supabase
+    .from("scales")
+    .select("id, title, created_at, updated_at, scale_notes(*)")
+    .eq("id", scaleId)
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
 export async function createScale({
   title = "Untitled Scale",
   notes,

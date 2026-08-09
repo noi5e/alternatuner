@@ -6,6 +6,16 @@ export type ScaleHeaderProps = {
   isSaving: boolean;
 };
 
+export type ScaleSideBarProps = {
+  scales: SavedScale[];
+  isLoading: boolean;
+  error: string | null;
+};
+
+export type ScaleListErrorProps = {
+  message: string;
+};
+
 export type CreateScaleNoteInput = {
   hertz: number;
 };

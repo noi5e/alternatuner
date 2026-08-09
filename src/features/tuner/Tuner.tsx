@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 
+import { useAuthClaims } from "@/features/auth/useAuthClaims";
+
 import type { Note, PlayingNote } from "@/features/tuner/tuner.types";
+import type { SavedScale } from "@/features/scales/scale.types";
 
 import { ScaleHeader } from "@/features/scales/ScaleHeader";
 import { NoteForm } from "@/features/tuner/NoteForm";
@@ -10,7 +13,7 @@ import { getPlayingNote } from "@/features/tuner/audio";
 import { getKeyboardRange } from "@/features/tuner/keyBindings";
 import { ScaleSideBar } from "@/features/scales/ScaleSideBar";
 
-import { createScale } from "@/features/scales/api";
+import { createScale, listScales } from "@/features/scales/api";
 
 const MIN_HIGHLIGHT_MS = 100; // minimum time to highlight a NoteButton after stopNote() is called, to ensure that short pointer taps are visually registered in the UI.
 
@@ -28,8 +31,12 @@ function getPlayableNotes(notes: Note[]) {
 export function Tuner() {
   const [notes, setNotes] = useState<Note[]>([]); // notes that user enters/deletes, visible in UI
   const [scaleTitle, setScaleTitle] = useState<string>("Untitled Scale"); // title of scale, editable by user
-  const [playingHertz, setPlayingHertz] = useState<Set<number>>(new Set()); // set of hertz values, sync'ed with  playingNotes, used to highlight actively playing notes in UI.
 
+  const [scales, setScales] = useState<SavedScale[]>([]); // list of users' scales fetched from database, visible in ScaleSideBar
+  const [scalesLoading, setScalesLoading] = useState(true);
+  const [scalesError, setScalesError] = useState<string | null>(null);
+
+  const [playingHertz, setPlayingHertz] = useState<Set<number>>(new Set()); // set of hertz values, sync'ed with  playingNotes, used to highlight actively playing notes in UI.
   const playingNotes = useRef<Map<string, PlayingNote>>(new Map()); // live PlayingNote objects, with built-in stop functions, that user is currently playing via keyboard, or pointer (mouse or touch). key is either "keyboard:${event.code}" or "pointer:${pointerId}"
   const audioContextRef = useRef<AudioContext | null>(null); // reuse audio context; avoid creating new audioCtx for each note, and allow sustained, overlapping notes
 
@@ -149,6 +156,36 @@ export function Tuner() {
     };
   }, [stopAllNotes]);
 
+  const { claims, loading } = useAuthClaims();
+
+  useEffect(() => {
+    if (loading || !claims) {
+      setScales([]);
+      return;
+    }
+
+    async function fetchScales() {
+      let scales;
+
+      try {
+        setScalesLoading(true);
+        setScalesError(null);
+        scales = await listScales();
+        setScales(scales);
+      } catch (error) {
+        console.error("Error fetching scales:", error);
+
+        setScalesError(
+          error instanceof Error ? error.message : "Failed to fetch scales",
+        );
+      } finally {
+        setScalesLoading(false);
+      }
+    }
+
+    fetchScales();
+  }, [claims, loading]);
+
   // get user input, create NoteButton component in UI
   function createNote(formData: FormData) {
     const raw = formData.get("hertz");
@@ -209,7 +246,11 @@ export function Tuner() {
 
   return (
     <div className="grid min-h-[calc(100vh-var(--nav-height))] grid-cols-1 lg:grid-cols-[16rem_minmax(0,1fr)]">
-      <ScaleSideBar />
+      <ScaleSideBar
+        scales={scales}
+        isLoading={scalesLoading}
+        error={scalesError}
+      />
       <main className="min-w-0 p-4 sm:p-6 lg:p-8">
         <ScaleHeader
           scaleTitle={scaleTitle}
