@@ -7,7 +7,7 @@ export type ScaleHeaderProps = {
 };
 
 export type ScaleSideBarProps = {
-  scales: SavedScale[];
+  scales: DatabaseScaleRow[];
   isLoading: boolean;
   error: string | null;
 };
@@ -16,25 +16,33 @@ export type ScaleListErrorProps = {
   message: string;
 };
 
-export type CreateScaleNoteInput = {
+export type EditorScaleNote = {
   hertz: number;
 };
 
-export type CreateScaleInput = {
+// a scale that is editable/visible in UI, also used to create audio objects for playback.
+export type EditorScale = {
   title: string;
-  notes: CreateScaleNoteInput[];
+  notes: EditorScaleNote[];
 };
 
-export type ScaleNote = {
+// single row from scale_notes table, with foreign key scale_id to scales table
+export type DatabaseScaleNoteRow = {
   id: string;
   scale_id: string;
   position: number;
   hertz: number;
 };
 
-export type SavedScale = {
+// single row from scales table, without its associated scale_notes
+export type DatabaseScaleRow = {
   id: string;
   title: string;
   created_at: string;
   updated_at: string;
+};
+
+// single row from scales table WITH its associated scale_notes
+export type DatabaseScaleRowWithNotes = DatabaseScaleRow & {
+  scale_notes: DatabaseScaleNoteRow[];
 };

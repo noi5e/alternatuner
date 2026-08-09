@@ -2,8 +2,12 @@ import { useState, useRef, useEffect, useCallback } from "react";
 
 import { useAuthClaims } from "@/features/auth/useAuthClaims";
 
-import type { Note, PlayingNote } from "@/features/tuner/tuner.types";
-import type { SavedScale } from "@/features/scales/scale.types";
+import type {
+  ScaleEditorProps,
+  Note,
+  PlayingNote,
+} from "@/features/tuner/tuner.types";
+import type { DatabaseScaleRowWithNotes } from "@/features/scales/scale.types";
 
 import { ScaleHeader } from "@/features/scales/ScaleHeader";
 import { NoteForm } from "@/features/tuner/NoteForm";
@@ -13,7 +17,7 @@ import { getPlayingNote } from "@/features/tuner/audio";
 import { getKeyboardRange } from "@/features/tuner/keyBindings";
 import { ScaleSideBar } from "@/features/scales/ScaleSideBar";
 
-import { createScale, listScales } from "@/features/scales/api";
+import { listScales } from "@/features/scales/api";
 
 const MIN_HIGHLIGHT_MS = 100; // minimum time to highlight a NoteButton after stopNote() is called, to ensure that short pointer taps are visually registered in the UI.
 
@@ -28,11 +32,13 @@ function getPlayableNotes(notes: Note[]) {
   return sortedNotes.map((note, i) => ({ ...note, ...keys[i] }));
 }
 
-export function Tuner() {
-  const [notes, setNotes] = useState<Note[]>([]); // notes that user enters/deletes, visible in UI
-  const [scaleTitle, setScaleTitle] = useState<string>("Untitled Scale"); // title of scale, editable by user
+export function Tuner({ initialScale, onSave }: ScaleEditorProps) {
+  const [notes, setNotes] = useState<Note[]>(initialScale.notes || []); // notes that user enters/deletes, visible in UI
+  const [scaleTitle, setScaleTitle] = useState<string>(
+    initialScale.title || "Untitled Scale",
+  ); // title of scale, editable by user
 
-  const [scales, setScales] = useState<SavedScale[]>([]); // list of users' scales fetched from database, visible in ScaleSideBar
+  const [scales, setScales] = useState<DatabaseScaleRowWithNotes[]>([]); // list of users' scales fetched from database, visible in ScaleSideBar
   const [scalesLoading, setScalesLoading] = useState(true);
   const [scalesError, setScalesError] = useState<string | null>(null);
 
@@ -228,12 +234,7 @@ export function Tuner() {
     setSaveError(null);
 
     try {
-      const savedScale = await createScale({
-        title: scaleTitle,
-        notes: notes.map(({ hertz }) => ({ hertz })),
-      });
-
-      console.log("Saved scale:", savedScale);
+      await onSave({ title: scaleTitle, notes });
     } catch (error) {
       console.error("Error saving scale:", error);
       setSaveError(
