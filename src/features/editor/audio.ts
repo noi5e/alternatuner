@@ -1,4 +1,4 @@
-import type { PlayingNote } from "@/features/tuner/tuner.types";
+import type { PlayingNote } from "@/features/editor/editor.types";
 
 const PEAK = 0.18; // peak volume
 const SUSTAIN = 0.08; // after "peak," volume "decays" to this level, and sustains volume until "duration" ends

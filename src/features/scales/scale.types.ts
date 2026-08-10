@@ -7,7 +7,7 @@ export type ScaleHeaderProps = {
 };
 
 export type ScaleSideBarProps = {
-  scales: DatabaseScaleRow[];
+  userScales: DatabaseScaleRow[];
   isLoading: boolean;
   error: string | null;
 };

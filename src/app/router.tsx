@@ -1,24 +1,44 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 
-import { getScaleById } from "@/features/scales/api";
+import { scaleLoader } from "@/features/scales/loaders";
 
+import { ScalesLayout } from "@/features/scales/ScalesLayout.tsx";
 import { AppLayout } from "@/app/AppLayout.tsx";
-import { Tuner } from "@/features/tuner/Tuner.tsx";
 import { LoginForm } from "@/features/auth/LoginForm.tsx";
+import { NewScalePage } from "@/features/scales/NewScalePage";
+import { ScalePage } from "@/features/scales/ScalePage";
 
 export const router = createBrowserRouter([
   {
     element: <AppLayout />,
     children: [
-      { path: "/", element: <Tuner /> },
       { path: "/login", element: <LoginForm /> },
       {
-        path: "/scales/:scaleId",
-        element: <Tuner />,
-        loader: async ({ params }) => {
-          const scale = await getScaleById(params.scaleId as string);
-          return { scale };
-        },
+        element: <ScalesLayout />,
+        children: [
+          {
+            index: true,
+            element: <Navigate to="/scales/new" replace />,
+          },
+          {
+            path: "scales",
+            children: [
+              {
+                index: true,
+                element: <Navigate to="/scales/new" replace />,
+              },
+              {
+                path: "new",
+                element: <NewScalePage />,
+              },
+              {
+                path: ":scaleSlug",
+                loader: scaleLoader,
+                element: <ScalePage />,
+              },
+            ],
+          },
+        ],
       },
     ],
   },

@@ -7,7 +7,11 @@ import { Button } from "@/components/ui/button";
 
 import type { ScaleSideBarProps, ScaleListErrorProps } from "./scale.types";
 
-export function ScaleSideBar({ scales, isLoading, error }: ScaleSideBarProps) {
+export function ScaleSideBar({
+  userScales,
+  isLoading,
+  error,
+}: ScaleSideBarProps) {
   return (
     <aside className="hidden border-r bg-muted/30 lg:flex h-[calc(100vh-var(--nav-height))] flex-col p-4 sticky top-(--nav-height) ">
       <header className="mb-4">
@@ -21,11 +25,11 @@ export function ScaleSideBar({ scales, isLoading, error }: ScaleSideBarProps) {
           <ScaleListSkeleton />
         ) : error ? (
           <ScaleListError message={error} />
-        ) : scales.length === 0 ? (
+        ) : userScales.length === 0 ? (
           <ScaleListEmpty />
         ) : (
           <ul className="space-y-1">
-            {scales.map((scale) => {
+            {userScales.map((scale) => {
               return (
                 <li key={scale.id}>
                   <Link
