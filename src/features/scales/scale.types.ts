@@ -7,7 +7,7 @@ export type ScaleHeaderProps = {
 };
 
 export type ScaleSideBarProps = {
-  userScales: DatabaseScaleRow[];
+  userScales: SideBarScale[];
   isLoading: boolean;
   error: string | null;
 };
@@ -24,6 +24,13 @@ export type EditorScaleNote = {
 export type EditorScale = {
   title: string;
   notes: EditorScaleNote[];
+};
+
+// link to user's individual scale in sidebar
+export type SideBarScale = {
+  id: string;
+  title: string;
+  noteCount: number;
 };
 
 // single row from scale_notes table, with foreign key scale_id to scales table

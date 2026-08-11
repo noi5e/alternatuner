@@ -5,7 +5,7 @@ import type {
   DatabaseScaleRowWithNotes,
 } from "@/features/scales/scale.types";
 
-export async function listScales() {
+export async function listScales(): Promise<DatabaseScaleRowWithNotes[]> {
   const { data, error } = await supabase
     .from("scales")
     .select("id, title, created_at, updated_at, scale_notes(*)")

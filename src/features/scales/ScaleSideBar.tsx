@@ -2,8 +2,13 @@ import { Link } from "react-router";
 
 import { routeSlugTranslator } from "@/lib/routeSlug";
 
-import { PlusIcon, WarningCircleIcon } from "@phosphor-icons/react";
+import {
+  PlusIcon,
+  WarningCircleIcon,
+  MusicNoteSimpleIcon,
+} from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 import type { ScaleSideBarProps, ScaleListErrorProps } from "./scale.types";
 
@@ -32,6 +37,13 @@ export function ScaleSideBar({
             {userScales.map((scale) => {
               return (
                 <li key={scale.id}>
+                  <Badge variant="secondary" className="mr-2">
+                    <MusicNoteSimpleIcon
+                      data-icon="inline-start"
+                      weight="fill"
+                    />
+                    <span className="text-xs">{scale.noteCount}</span>
+                  </Badge>
                   <Link
                     to={`/scales/${routeSlugTranslator.fromUUID(scale.id)}`}
                   >
@@ -45,9 +57,12 @@ export function ScaleSideBar({
       </nav>
 
       <footer className="p-4">
-        <Button className="mt-4 w-full justify-start" variant="outline">
+        <Button
+          className="mt-4 w-full justify-start cursor-pointer"
+          variant="outline"
+        >
           <PlusIcon className="size-4" />
-          New Scale
+          <Link to="/scales/new">New Scale</Link>
         </Button>
       </footer>
     </aside>

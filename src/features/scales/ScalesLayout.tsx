@@ -6,7 +6,20 @@ import { ScaleSideBar } from "@/features/scales/ScaleSideBar";
 import { useAuthClaims } from "@/features/auth/useAuthClaims";
 import { listScales } from "@/features/scales/api";
 
-import type { DatabaseScaleRowWithNotes } from "@/features/scales/scale.types";
+import type {
+  DatabaseScaleRowWithNotes,
+  SideBarScale,
+} from "@/features/scales/scale.types";
+
+function getSideBarScales(
+  databaseRows: DatabaseScaleRowWithNotes[],
+): SideBarScale[] {
+  return databaseRows.map((row) => ({
+    id: row.id,
+    title: row.title,
+    noteCount: row.scale_notes.length,
+  }));
+}
 
 export function ScalesLayout() {
   const { claims, loading } = useAuthClaims();
@@ -49,7 +62,7 @@ export function ScalesLayout() {
     <div className="grid min-h-[calc(100vh-var(--nav-height))] grid-cols-1 lg:grid-cols-[16rem_minmax(0,1fr)]">
       {isSideBarVisible && (
         <ScaleSideBar
-          userScales={userScales}
+          userScales={getSideBarScales(userScales)}
           isLoading={scalesLoading}
           error={scalesError}
         />
