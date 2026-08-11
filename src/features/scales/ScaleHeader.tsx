@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { FileIcon, HeartIcon } from "@phosphor-icons/react";
+import { FileIcon, HeartIcon, TrashIcon } from "@phosphor-icons/react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import type { ScaleHeaderProps } from "@/features/scales/scale.types";
 export function ScaleHeader({
   scaleTitle,
   notesCount,
+  onDelete,
   onSave,
   isSaving,
   setScaleTitle,
@@ -110,13 +111,23 @@ export function ScaleHeader({
           Favorite
         </Button>
         <Button
-          className="max-w-fit cursor-pointer"
+          className="max-w-fit mr-2 cursor-pointer"
           disabled={isSaving}
           onClick={onSave}
         >
           <FileIcon />
           {isSaving ? "Saving..." : "Save"}
         </Button>
+        {typeof onDelete === "function" && ( // only render delete button on editors for updating scales, not on new scale creation
+          <Button
+            variant="destructive"
+            className="max-w-fit cursor-pointer"
+            onClick={() => onDelete()}
+          >
+            <TrashIcon />
+            Delete
+          </Button>
+        )}
       </div>
     </div>
   );

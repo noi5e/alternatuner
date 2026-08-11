@@ -1,8 +1,11 @@
+import type { deleteScaleFunction } from "@/features/editor/editor.types";
+
 export type ScaleHeaderProps = {
   notesCount: number;
   setScaleTitle: (newTitle: string) => void;
   scaleTitle: string;
   onSave: () => void;
+  onDelete?: deleteScaleFunction;
   isSaving: boolean;
 };
 

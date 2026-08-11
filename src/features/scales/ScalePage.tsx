@@ -1,7 +1,7 @@
 import { useLoaderData } from "react-router";
 
 import { Editor } from "@/features/editor/Editor";
-import { updateScale } from "@/features/scales/api.ts";
+import { updateScale, deleteScale } from "@/features/scales/api.ts";
 import type { DatabaseScaleRowWithNotes } from "@/features/scales/scale.types";
 import type { EditorScale } from "@/features/scales/scale.types";
 
@@ -24,6 +24,7 @@ export function ScalePage() {
     <Editor
       key={scale.id}
       initialScale={{ title: scale.title, notes: getEditableScale(scale) }}
+      onDelete={() => deleteScale(scale.id)}
       onSave={handleUpdate}
     />
   );

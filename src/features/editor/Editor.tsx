@@ -26,7 +26,7 @@ function getPlayableNotes(notes: Note[]) {
   return sortedNotes.map((note, i) => ({ ...note, ...keys[i] }));
 }
 
-export function Editor({ initialScale, onSave }: ScaleEditorProps) {
+export function Editor({ initialScale, onDelete, onSave }: ScaleEditorProps) {
   const [notes, setNotes] = useState<Note[]>(
     () =>
       // state for notes that user enters/deletes, visible in UI as NoteButtons
@@ -214,6 +214,7 @@ export function Editor({ initialScale, onSave }: ScaleEditorProps) {
       <ScaleHeader
         scaleTitle={scaleTitle}
         notesCount={notes.length}
+        onDelete={onDelete}
         onSave={saveScale}
         setScaleTitle={setScaleTitle}
         isSaving={isSaving}

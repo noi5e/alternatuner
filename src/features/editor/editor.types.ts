@@ -3,9 +3,12 @@ import type { EditorScale } from "@/features/scales/scale.types";
 type startNoteFunction = (id: string, hertz: number) => void;
 type stopNoteFunction = (id: string) => void;
 
+export type deleteScaleFunction = () => void;
+
 export type ScaleEditorProps = {
   key?: string;
   initialScale: EditorScale;
+  onDelete?: deleteScaleFunction;
   onSave(scale: EditorScale): Promise<void>;
 };
 
