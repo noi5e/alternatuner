@@ -5,6 +5,10 @@ import type {
   DatabaseScaleRowWithNotes,
 } from "@/features/scales/scale.types";
 
+function stripEditorScaleNotesArray(notes: EditorScale["notes"]): number[] {
+  return notes.map(({ hertz }) => hertz);
+}
+
 export async function listScales(): Promise<DatabaseScaleRowWithNotes[]> {
   const { data, error } = await supabase
     .from("scales")
@@ -32,72 +36,31 @@ export async function createScale({
   title = "Untitled Scale",
   notes,
 }: EditorScale): Promise<DatabaseScaleRow> {
-  const { data: scale, error: scaleError } = await supabase
-    .from("scales")
-    .insert({ title: title.trim() || "Untitled Scale" })
-    .select("id, title, created_at, updated_at")
+  const p_notes = stripEditorScaleNotesArray(notes);
+
+  const { data, error } = await supabase
+    .rpc("create_scale_with_notes", {
+      p_title: title,
+      p_notes,
+    })
     .single();
 
-  if (scaleError) throw scaleError;
-
-  // An empty scale doesn't require a scale_notes insert.
-  if (notes.length === 0) {
-    return scale;
-  }
-
-  // Attach every note to the newly created scale.
-  const noteRows = notes.map((note, position) => ({
-    scale_id: scale.id,
-    hertz: note.hertz,
-    position,
-  }));
-
-  const { error: notesError } = await supabase
-    .from("scale_notes")
-    .insert(noteRows);
-  if (notesError) throw notesError;
-
-  return scale;
+  if (error) throw error;
+  return data;
 }
 
-export async function updateScale(id: string, { title, notes }: EditorScale) {
-  const normalizedTitle = title.trim() || "Untitled Scale";
+export async function updateScale(
+  id: string,
+  { title, notes }: EditorScale,
+): Promise<DatabaseScaleRowWithNotes> {
+  const { error } = await supabase.rpc("update_scale_with_notes", {
+    p_scale_id: id,
+    p_title: title,
+    p_notes: stripEditorScaleNotesArray(notes),
+  });
 
-  // Update the parent scale row.
-  const { error: scaleError } = await supabase
-    .from("scales")
-    .update({
-      title: normalizedTitle,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", id);
+  if (error) throw error;
 
-  if (scaleError) throw scaleError;
-
-  // Remove the scale's previous note set.
-  const { error: deleteNotesError } = await supabase
-    .from("scale_notes")
-    .delete()
-    .eq("scale_id", id);
-
-  if (deleteNotesError) throw deleteNotesError;
-
-  // An empty array means the scale should now have no notes.
-  if (notes.length > 0) {
-    const noteRows = notes.map(({ hertz }, position) => ({
-      scale_id: id,
-      hertz,
-      position,
-    }));
-
-    const { error: insertNotesError } = await supabase
-      .from("scale_notes")
-      .insert(noteRows);
-
-    if (insertNotesError) throw insertNotesError;
-  }
-
-  // Return the scale with its updated notes.
   return getScaleById(id);
 }
 
