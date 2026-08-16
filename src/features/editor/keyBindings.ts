@@ -10,7 +10,7 @@ function getAlphaNumericKey(char: string) {
   return { code: `Key${char.toUpperCase()}`, label: char.toLowerCase() };
 }
 
-const PLAYABLE_KEYS: Key[] = [
+export const PLAYABLE_KEYS: Key[] = [
   // These punctuation keys are included because they are commonly adjacent
   // to the main letter cluster on US-style keyboards.
   ..."1234567890".split("").map(getAlphaNumericKey),

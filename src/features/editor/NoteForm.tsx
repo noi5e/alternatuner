@@ -25,6 +25,7 @@ export function NoteForm({ onCreateNote }: NoteFormProps) {
                 id="hertz"
                 className="rounded-none text-lg flex-1 font-semibold tabular-nums"
                 name="hertz"
+                type="number"
                 placeholder="Enter frequency in Hz..."
                 required
               />

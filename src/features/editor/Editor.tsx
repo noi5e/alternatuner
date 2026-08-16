@@ -11,7 +11,7 @@ import { NoteForm } from "@/features/editor/NoteForm";
 import { NotesList } from "@/features/editor/NotesList";
 
 import { getPlayingNote } from "@/features/editor/audio";
-import { getKeyboardRange } from "@/features/editor/keyBindings";
+import { getKeyboardRange, PLAYABLE_KEYS } from "@/features/editor/keyBindings";
 
 const MIN_HIGHLIGHT_MS = 100; // minimum time to highlight a NoteButton after stopNote() is called, to ensure that short pointer taps are visually registered in the UI.
 
@@ -165,10 +165,17 @@ export function Editor({ initialScale, onDelete, onSave }: ScaleEditorProps) {
       return;
     }
 
+    if (notes.length === PLAYABLE_KEYS.length) {
+      console.error(
+        `A scale can't contain more than ${PLAYABLE_KEYS.length} notes.`,
+      );
+      return; // prevent adding more notes than there are playable keys
+    }
+
     const hertz = Number(raw);
 
-    if (Number.isNaN(hertz)) {
-      console.error("Hertz must be a number");
+    if (!Number.isFinite(hertz) || hertz <= 0) {
+      console.error("Frequency must be a finite number greater than 0.");
       return;
     }
 
