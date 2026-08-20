@@ -1,20 +1,21 @@
 import { Editor } from "@/features/editor/Editor";
-
 import { createScale } from "@/features/scales/api";
 import { useNavigate } from "react-router";
+import { useScalesContext } from "@/features/scales/useScalesContext";
 import type { EditorScale } from "@/features/scales/scale.types";
 import { routeSlugTranslator } from "@/lib/routeSlug";
 
 export function NewScalePage() {
   const navigate = useNavigate();
+  const { refreshScales } = useScalesContext();
 
   async function handleCreate(draft: EditorScale) {
-    const input = {
+    const created = await createScale({
       title: draft.title,
       notes: draft.notes.map(({ hertz }) => ({ hertz })),
-    };
+    });
 
-    const created = await createScale(input);
+    await refreshScales();
 
     // after scale is created, navigate to its dedicated /scales/scaleSlug page, so that onSave becomes updateScale() instead of createScale().
     navigate(`/scales/${routeSlugTranslator.fromUUID(created.id)}`, {

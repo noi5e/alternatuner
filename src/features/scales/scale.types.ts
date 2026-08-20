@@ -36,6 +36,11 @@ export type SideBarScale = {
   noteCount: number;
 };
 
+export type ScalesOutletContext = {
+  // define type to avoid redundant type casting in child components, which depend on refreshScales() passed to them through Outlet context.
+  refreshScales: () => Promise<void>; // thin wrapper of React Router's useOutletContext() hook
+};
+
 // single row from scale_notes table, with foreign key scale_id to scales table
 export type DatabaseScaleNoteRow = {
   id: string;

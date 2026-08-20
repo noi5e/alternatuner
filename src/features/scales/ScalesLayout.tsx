@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Outlet } from "react-router";
 
 import { ScaleSideBar } from "@/features/scales/ScaleSideBar";
@@ -29,34 +29,34 @@ export function ScalesLayout() {
   const [scalesLoading, setScalesLoading] = useState(true);
   const [scalesError, setScalesError] = useState<string | null>(null);
 
-  // fetch user's scales from database, and list them in ScaleSideBar.
-  useEffect(() => {
+  const refreshScales = useCallback(async () => {
     if (loading || !claims) {
       setUserScales([]);
+      setScalesLoading(false);
       return;
     }
 
-    async function fetchScales() {
-      let scales;
+    try {
+      setScalesLoading(true);
+      setScalesError(null);
+      const scales = await listScales();
+      setUserScales(scales);
+    } catch (error) {
+      console.error("Error refreshing scales:", error);
 
-      try {
-        setScalesLoading(true);
-        setScalesError(null);
-        scales = await listScales();
-        setUserScales(scales);
-      } catch (error) {
-        console.error("Error fetching scales:", error);
-
-        setScalesError(
-          error instanceof Error ? error.message : "Failed to fetch scales",
-        );
-      } finally {
-        setScalesLoading(false);
-      }
+      setScalesError(
+        error instanceof Error ? error.message : "Failed to refresh scales",
+      );
+    } finally {
+      setScalesLoading(false);
     }
-
-    fetchScales();
   }, [claims, loading]);
+
+  // fetch user's scales from database, and list them in ScaleSideBar.
+  useEffect(() => {
+    if (loading) return;
+    void refreshScales(); // fire-and-forget async function, because React doesn't allow useEffect to return a Promise. however, we still want to fetch data from server, which is inherently async.
+  }, [loading, refreshScales]);
 
   return (
     <div className="grid min-h-[calc(100vh-var(--nav-height))] grid-cols-1 lg:grid-cols-[16rem_minmax(0,1fr)]">
@@ -67,7 +67,7 @@ export function ScalesLayout() {
           error={scalesError}
         />
       )}
-      <Outlet />
+      <Outlet context={{ refreshScales }} />
     </div>
   );
 }

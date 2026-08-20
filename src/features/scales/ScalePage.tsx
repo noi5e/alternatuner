@@ -1,9 +1,12 @@
-import { useLoaderData } from "react-router";
+import { useLoaderData, useNavigate } from "react-router";
+import { useScalesContext } from "@/features/scales/useScalesContext";
 
 import { Editor } from "@/features/editor/Editor";
 import { updateScale, deleteScale } from "@/features/scales/api.ts";
-import type { DatabaseScaleRowWithNotes } from "@/features/scales/scale.types";
-import type { EditorScale } from "@/features/scales/scale.types";
+import type {
+  DatabaseScaleRowWithNotes,
+  EditorScale,
+} from "@/features/scales/scale.types";
 
 function getEditableScale(
   scale: DatabaseScaleRowWithNotes,
@@ -16,15 +19,27 @@ function getEditableScale(
 export function ScalePage() {
   const { scale } = useLoaderData() as { scale: DatabaseScaleRowWithNotes };
 
+  const navigate = useNavigate();
+  const { refreshScales } = useScalesContext();
+
   async function handleUpdate(draft: EditorScale) {
     await updateScale(scale.id, draft);
+    await refreshScales();
+  }
+
+  async function handleDelete() {
+    await deleteScale(scale.id);
+    await refreshScales();
+
+    // The current route now points at a deleted database record.
+    navigate("/scales/new", { replace: true });
   }
 
   return (
     <Editor
       key={scale.id}
       initialScale={{ title: scale.title, notes: getEditableScale(scale) }}
-      onDelete={() => deleteScale(scale.id)}
+      onDelete={handleDelete}
       onSave={handleUpdate}
     />
   );
